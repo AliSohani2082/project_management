@@ -20,6 +20,12 @@ const ClientType = new GraphQLObjectType({
     name: { type: GraphQLString },
     email: { type: GraphQLString },
     phone: { type: GraphQLString },
+    projects: {
+      type: new GraphQLList(ProjectType),
+      resolve(parent, args){
+        return Project.find({ clientId: parent.id })
+      }
+    }
   })
 })
 
@@ -96,7 +102,11 @@ const mutation =  new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(GraphQLID)}
       },
-      resolve(parent, args) {
+      async resolve(parent, args) {
+        const projects = await Project.find({ clientId: args.id});
+        for(const project of projects) {
+          await Project.findByIdAndRemove(project.id);
+        }
         return Client.findByIdAndRemove(args.id)
       }
     },
@@ -154,6 +164,7 @@ const mutation =  new GraphQLObjectType({
             }
           }),
         },
+        clientId: { type: GraphQLID}
       },
       resolve(parent, args) {
         return Project.findByIdAndUpdate(
@@ -163,6 +174,7 @@ const mutation =  new GraphQLObjectType({
               name: args.name,
               description: args.description,
               status: args.status,
+              clientId: args.clientId,
             },
           },
           { new: true }
