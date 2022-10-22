@@ -1,12 +1,18 @@
 import { useState } from 'react'
+import Header from './components/Header'
+import Clients from './components/Clients'
+
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <div className="container">
-      <h1>Hey there</h1>
-    </div>
+    <>
+      <Header />  
+      <div className="container">
+        <Clients/>
+      </div>
+    </>
   )
 }
 
